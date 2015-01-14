@@ -2,6 +2,8 @@
 
 import pytest
 
+from requeues import KEEP_QUEUED_ELEMENTS_REMOVE
+
 from tests import redis_conn
 from requeues.simplequeue import SimpleQueue
 
@@ -81,6 +83,17 @@ class TestSimpleQueue(object):
     def test_first_elements(self):
         self.queue.push_some(some_elements)
         assert self.queue.first_elements(3) == some_elements[0:3]
+
+    def test_fresh_queue(self):
+        self.queue.push(ELEMENT_EGG)
+        assert self.queue.is_not_empty() is True
+
+        queue_y = SimpleQueue(
+            id_args=['test', 'testing'],
+            keep_previous=KEEP_QUEUED_ELEMENTS_REMOVE,
+            redis_conn=redis_conn
+        )
+        assert queue_y.is_empty() is True
 
     def test_delete(self):
         self.queue.push(element=ELEMENT_42)

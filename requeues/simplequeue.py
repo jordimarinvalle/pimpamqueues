@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from requeues import QUEUE_COLLECTION_OF_ELEMENTS
-from requeues import KEEP_QUEUED_ITEMS_KEEP, KEEP_QUEUED_ITEMS_REMOVE
+from requeues import KEEP_QUEUED_ELEMENTS_KEEP, KEEP_QUEUED_ELEMENTS_REMOVE
 
 from requeues import Tools
 from requeues.exceptions import RequeuesError
@@ -16,7 +16,7 @@ class SimpleQueue(object):
 
     def __init__(self, id_args=[],
                  collection_of=QUEUE_COLLECTION_OF_ELEMENTS,
-                 keep_previous=KEEP_QUEUED_ITEMS_KEEP,
+                 keep_previous=KEEP_QUEUED_ELEMENTS_KEEP,
                  redis_conn=None):
         '''
         Create a SimpleQueue object.
@@ -25,7 +25,7 @@ class SimpleQueue(object):
         :id_args -- list, list's values will be used to name the queue
         :collection_of -- string (default: QUEUE_COLLECTION_OF_ELEMENTS),
                           a type descriptor of queued elements
-        :keep_previous -- boolean (default: KEEP_QUEUED_ITEMS_KEEP),
+        :keep_previous -- boolean (default: KEEP_QUEUED_ELEMENTS_KEEP),
                           a flag to create a fresh queue or not
         :redis_conn -- redis.client.Redis (default: None), a redis
                        connection will be created using the default
@@ -42,8 +42,8 @@ class SimpleQueue(object):
 
         self.keys = [self.key_queue, ]
 
-        if keep_previous is KEEP_QUEUED_ITEMS_REMOVE:
-            self.delete(self.key)
+        if keep_previous is KEEP_QUEUED_ELEMENTS_REMOVE:
+            self.delete()
 
     def __str__(self):
         '''
