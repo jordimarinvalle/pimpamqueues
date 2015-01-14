@@ -38,10 +38,12 @@ class SimpleQueue(object):
             redis_conn = redis.Redis()
         self.redis = redis_conn
 
-        self.key = self.get_key()
+        self.key_queue = self.get_key_queue()
+
+        self.keys = [self.key_queue, ]
 
         if keep_previous is KEEP_QUEUED_ITEMS_REMOVE:
-            self.delete(self.keys)
+            self.delete(self.key)
 
     def __str__(self):
         '''
@@ -49,9 +51,9 @@ class SimpleQueue(object):
 
         Returns: string
         '''
-        return '<SimpleQueue: %s (%s)>' % (self.key, self.num())
+        return '<SimpleQueue: %s (%s)>' % (self.key_queue, self.num())
 
-    def get_key(self):
+    def get_key_queue(self):
         '''
         Get a key id that will be used to store/retrieve data from
         the redis server.
@@ -80,8 +82,8 @@ class SimpleQueue(object):
             element = element.strip()
 
             if queue_first:
-                return self.redis.lpush(self.key, element)
-            return self.redis.rpush(self.key, element)
+                return self.redis.lpush(self.key_queue, element)
+            return self.redis.rpush(self.key_queue, element)
 
         except Exception as e:
             raise RequeuesError(e.message)
@@ -117,9 +119,9 @@ class SimpleQueue(object):
             for s in block_slices:
                 some_elements = elements[s[0]:s[1]]
                 if queue_first:
-                    pipe.lpush(self.key, *some_elements)
+                    pipe.lpush(self.key_queue, *some_elements)
                 else:
-                    pipe.rpush(self.key, *some_elements)
+                    pipe.rpush(self.key_queue, *some_elements)
             return pipe.execute().pop()
 
         except Exception as e:
@@ -138,8 +140,8 @@ class SimpleQueue(object):
         Returns: string, the popped element, or, none, if no element is popped
         '''
         if last:
-            return self.redis.rpop(self.key)
-        return self.redis.lpop(self.key)
+            return self.redis.rpop(self.key_queue)
+        return self.redis.lpop(self.key_queue)
 
     def num(self):
         '''
@@ -147,7 +149,7 @@ class SimpleQueue(object):
 
         Returns: integer, the number of elements that are queued
         '''
-        return self.redis.llen(self.key)
+        return self.redis.llen(self.key_queue)
 
     def is_empty(self):
         '''
@@ -180,7 +182,7 @@ class SimpleQueue(object):
 
         Returns: list
         '''
-        return self.redis.lrange(self.key, queue_from, queue_to)
+        return self.redis.lrange(self.key_queue, queue_from, queue_to)
 
     def first_elements(self, num_elements=10):
         '''
@@ -205,6 +207,7 @@ class SimpleQueue(object):
 
         Returns: boolean, true if queue has been deleted, otherwise false
         '''
-        if self.redis.delete(self.key) is 1:
-            return True
-        return False
+        pipe = self.redis.pipeline()
+        for key in self.keys:
+            pipe.delete(key)
+        return True if len(pipe.execute()) is len(self.keys) else False
