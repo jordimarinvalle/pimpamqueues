@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import redis
 import pytest
 
-from tests import REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, REDIS_DATABASE
+from tests import redis_conn
 from requeues.simplequeue import SimpleQueue
 
 
@@ -18,13 +17,6 @@ some_elements = [
     ELEMENT_SPAM,
     ELEMENT_42,
 ]
-
-redis_conn = redis.Redis(
-    host=REDIS_HOST,
-    port=REDIS_PORT,
-    password=REDIS_PASSWORD,
-    db=REDIS_DATABASE,
-)
 
 
 class TestSimpleQueue(object):
