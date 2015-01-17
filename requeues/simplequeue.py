@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import redis
+
 from requeues import QUEUE_COLLECTION_OF_ELEMENTS
 from requeues import KEEP_QUEUED_ELEMENTS_KEEP, KEEP_QUEUED_ELEMENTS_REMOVE
 
