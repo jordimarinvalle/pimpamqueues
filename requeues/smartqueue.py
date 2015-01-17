@@ -167,7 +167,6 @@ class SmartQueue(SimpleQueue):
                 num_elements=len(elements),
                 num_block_size=1
             )
-            print block_slices
 
             pipe = self.redis.pipeline()
             for s in block_slices:
