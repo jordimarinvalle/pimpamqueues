@@ -90,7 +90,7 @@ class SmartQueue(SimpleQueue):
             element = str(element)
 
             if not self._add_to_all(element):
-                return 0L
+                return 0
             return self._push_to_queue(element, queue_first)
 
         except Exception:
