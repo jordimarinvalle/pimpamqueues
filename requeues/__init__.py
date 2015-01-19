@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import math
+import hashlib
 
 
 NUM_BLOCK_SIZE = 1000
@@ -13,6 +14,15 @@ QUEUE_COLLECTION_OF_ELEMENTS = 'elements'
 
 KEEP_QUEUED_ELEMENTS_KEEP = True
 KEEP_QUEUED_ELEMENTS_REMOVE = False
+
+
+class DummyHasher(object):
+
+    @staticmethod
+    def hash(element):
+        if element:
+            return hashlib.md5(str(element).encode()).hexdigest()
+        return ''
 
 
 class Tools(object):
