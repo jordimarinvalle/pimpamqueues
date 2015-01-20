@@ -27,7 +27,7 @@ class SmartQueue(SimpleQueue):
                  keep_previous=KEEP_QUEUED_ELEMENTS_KEEP,
                  redis_conn=None):
         '''
-        Create a SimpleQueue object.
+        Create a SmartQueue object.
 
         Arguments:
         :id_args -- list, list's values will be used to name the queue
@@ -70,7 +70,8 @@ class SmartQueue(SimpleQueue):
         Returns: string
         '''
         return 'queue:%s:type:%s:of:%s:all' % ('.'.join(self.id_args),
-            SimpleQueue.QUEUE_TYPE_NAME, self.collection_of)
+                                               self.QUEUE_TYPE_NAME,
+                                               self.collection_of)
 
     def push(self, element, queue_first=False):
         '''
@@ -95,7 +96,7 @@ class SmartQueue(SimpleQueue):
             return self._push_to_queue(element, queue_first)
 
         except Exception:
-            raise RequeuesError("something was not right pushing %s " % (element))
+            raise RequeuesError("%s was not pushed" % (element))
 
     def push_some(self, elements, queue_first=False, num_block_size=None):
         '''
