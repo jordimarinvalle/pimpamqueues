@@ -198,8 +198,6 @@ class SimpleQueue(object):
         '''
         try:
 
-            element = element.strip()
-
             if queue_first:
                 return self.redis.lpush(self.key_queue, element)
             return self.redis.rpush(self.key_queue, element)
