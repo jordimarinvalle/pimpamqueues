@@ -43,10 +43,10 @@ class TestSimpleQueue(object):
 
     def test_push_pop(self):
         assert self.queue.push(ELEMENT_EGG) > 0
-        assert self.queue.pop(ELEMENT_EGG) == ELEMENT_EGG
+        assert self.queue.pop() == ELEMENT_EGG
 
     def test_pop_empty_queue(self):
-        assert self.queue.pop(ELEMENT_EGG) is None
+        assert self.queue.pop() is None
 
     def test_push_first_pop_last(self):
         self.queue.push(element=ELEMENT_EGG, queue_first=False)
