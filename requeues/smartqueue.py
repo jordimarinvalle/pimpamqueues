@@ -25,7 +25,7 @@ class SmartQueue(SimpleQueue, BucketQueue):
     def __init__(self, id_args=[],
                  collection_of=QUEUE_COLLECTION_OF_ELEMENTS,
                  keep_previous=KEEP_QUEUED_ELEMENTS_KEEP,
-                 redis_conn=None):
+                 redis_conn=None, disambiguator=None):
         '''
         Create a SmartQueue object.
 
@@ -38,6 +38,10 @@ class SmartQueue(SimpleQueue, BucketQueue):
         :redis_conn -- redis.client.Redis (default: None), a redis
                        connection will be created using the default
                        redis.client.Redis connection params.
+        :disambiguator -- class (default: none), a class with a disambiguate
+                          static method which receives a string as an argument.
+                          It is used to discriminate those elements that
+                          do not need to be pushed again.
         '''
         self.id_args = id_args
         self.collection_of = collection_of
@@ -53,6 +57,8 @@ class SmartQueue(SimpleQueue, BucketQueue):
 
         if keep_previous is KEEP_QUEUED_ELEMENTS_REMOVE:
             self.delete()
+
+        self.disambiguator = disambiguator
 
     def __str__(self):
         '''
@@ -80,12 +86,11 @@ class SmartQueue(SimpleQueue, BucketQueue):
 
             element = str(element)
 
-            if not self._push_to_bucket(element):
+            if not self._push_to_bucket(self.disambiguate(element)):
                 return 0
             return self._push_to_queue(element, queue_first)
 
-        except Exception as e:
-            print e.message
+        except Exception:
             raise RequeuesError("%s was not pushed" % (element))
 
     def push_some(self, elements, queue_first=False, num_block_size=None):
@@ -115,7 +120,8 @@ class SmartQueue(SimpleQueue, BucketQueue):
 
             elements = list(elements)
 
-            add_statuses = self._push_some_to_bucket(elements, 1)
+            disambiguated_elements = self.disambiguate_some(elements)
+            add_statuses = self._push_some_to_bucket(disambiguated_elements, 1)
 
             elements_to_queue = []
             for i, status in enumerate(add_statuses):
@@ -128,6 +134,32 @@ class SmartQueue(SimpleQueue, BucketQueue):
         except Exception as e:
             raise RequeuesError(e.message)
 
+    def disambiguate(self, element):
+        '''
+        Treats a element.
+
+        Arguments:
+        :element -- string
+
+        Returns: string
+        '''
+        if self.__has_to_disambiguate():
+            return self.disambiguator.disambiguate(element)
+        return element
+
+    def disambiguate_some(self, elements):
+        '''
+        Treats a list of elements.
+
+        Arguments:
+        :elements -- elements
+
+        Returns: list of strings
+        '''
+        if self.__has_to_disambiguate():
+            return [self.disambiguate(element) for element in elements]
+        return elements
+
     def delete(self):
         '''
         Delete the queue with all its elements.
@@ -138,3 +170,11 @@ class SmartQueue(SimpleQueue, BucketQueue):
         for key in self.keys:
             pipe.delete(key)
         return True if len(pipe.execute()) is len(self.keys) else False
+
+    def __has_to_disambiguate(self):
+        '''
+        Check if disambiguation code has to be triggered.
+
+        Returns: boolean, true if queue needs to disambiguate, otherwise false
+        '''
+        return True if self.disambiguator else False

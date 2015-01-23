@@ -14,6 +14,8 @@ ELEMENT_BACON = b'bacon'
 ELEMENT_SPAM = b'spam'
 ELEMENT_42 = b'42'
 
+ELEMENT_SPAM_UPPERCASED = b'SPAM'
+
 some_elements = [
     ELEMENT_EGG,
     ELEMENT_BACON,
@@ -22,7 +24,15 @@ some_elements = [
     ELEMENT_SPAM,
     ELEMENT_42,
     ELEMENT_SPAM,
+    ELEMENT_SPAM_UPPERCASED,
 ]
+
+
+class Disambiguator(object):
+
+    @staticmethod
+    def disambiguate(element):
+        return str(element).lower()
 
 
 class TestSmartQueue(object):
@@ -112,6 +122,26 @@ class TestSmartQueue(object):
             redis_conn=redis_conn
         )
         assert queue_y.is_empty() is True
+
+    def test_disambiguate(self):
+        self.queue = SmartQueue(
+            id_args=['test', 'testing'],
+            redis_conn=redis_conn,
+            disambiguator=Disambiguator,
+        )
+        assert self.queue.push(ELEMENT_SPAM) == 1
+        assert self.queue.push(ELEMENT_SPAM_UPPERCASED) == 0
+
+    def test_disambiguate_some(self):
+        self.queue = SmartQueue(
+            id_args=['test', 'testing'],
+            redis_conn=redis_conn,
+            disambiguator=Disambiguator,
+        )
+
+        num_elements = self.queue.push_some(some_elements)
+        assert num_elements == (len(set(some_elements)) - 1)
+        assert self.queue.push(ELEMENT_SPAM_UPPERCASED) == 0
 
     def test_delete(self):
         self.queue.push(element=ELEMENT_42)
