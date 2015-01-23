@@ -127,3 +127,14 @@ class SmartQueue(SimpleQueue, BucketQueue):
 
         except Exception as e:
             raise RequeuesError(e.message)
+
+    def delete(self):
+        '''
+        Delete the queue with all its elements.
+
+        Returns: boolean, true if queue has been deleted, otherwise false
+        '''
+        pipe = self.redis.pipeline()
+        for key in self.keys:
+            pipe.delete(key)
+        return True if len(pipe.execute()) is len(self.keys) else False

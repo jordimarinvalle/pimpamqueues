@@ -44,8 +44,6 @@ class SimpleQueue(object):
 
         self.key_queue = self.get_key_queue()
 
-        self.keys = [self.key_queue, ]
-
         if keep_previous is KEEP_QUEUED_ELEMENTS_REMOVE:
             self.delete()
 
@@ -177,10 +175,7 @@ class SimpleQueue(object):
 
         Returns: boolean, true if queue has been deleted, otherwise false
         '''
-        pipe = self.redis.pipeline()
-        for key in self.keys:
-            pipe.delete(key)
-        return True if len(pipe.execute()) is len(self.keys) else False
+        return True if self.redis.delete(self.key_queue) else False
 
     def _push_to_queue(self, element, queue_first=False):
         '''
