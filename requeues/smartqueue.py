@@ -77,7 +77,7 @@ class SmartQueue(SimpleQueue, BucketQueue):
         :element -- string
         :queue_first -- boolean (default: False)
 
-        Returns: number, the number of queued elements
+        Returns: long number, the number of elements that are in the queue
         '''
         if element in ('', None):
             raise RequeuesElementWithoutValueError()
@@ -114,7 +114,7 @@ class SmartQueue(SimpleQueue, BucketQueue):
         Raise:
         :RequeuesError(), if element can not be pushed
 
-        Returns: long, the number of queued elements
+        Returns: long number, the number of elements that are in the queue
         '''
         try:
 

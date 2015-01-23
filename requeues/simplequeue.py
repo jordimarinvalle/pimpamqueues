@@ -189,7 +189,7 @@ class SimpleQueue(object):
         Raise:
         :RequeuesError(), if element can not be pushed
 
-        Returns: long, the number of queued elements
+        Returns: long number, the number of elements that are in the queue
         '''
         try:
 
@@ -214,7 +214,7 @@ class SimpleQueue(object):
         Raise:
         :RequeuesError(), if elements can not be pushed
 
-        Returns: long, the number of queued elements
+        Returns: long number, the number of elements that are in the queue
         '''
         try:
 
