@@ -45,7 +45,11 @@ class TestBucketQueue(object):
         assert self.queue.push(ELEMENT_EGG) is 1
 
     def test_push_some(self):
-        assert self.queue.push_some(some_elements) is len(set(some_elements))
+        push_statuses = self.queue.push_some(some_elements, 1)
+        num_pushed = 0
+        for status in push_statuses:
+            num_pushed += status
+        assert num_pushed <= len(some_elements)
 
     def test_pop(self):
         self.queue.push_some(some_elements)

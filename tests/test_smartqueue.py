@@ -38,10 +38,6 @@ class TestSmartQueue(object):
         assert self.queue.is_empty() is True
         assert self.queue.is_not_empty() is False
 
-    def test_add_to_all(self):
-        statuses = self.queue._add_some_to_all(some_elements)
-        assert len(statuses) is len(some_elements)
-
     def test_push(self):
         assert self.queue.push(ELEMENT_EGG) > 0
         assert self.queue.num() is 1
@@ -59,8 +55,11 @@ class TestSmartQueue(object):
         assert self.queue.num() is 4
 
     def test_push_pop(self):
-        assert self.queue.push(ELEMENT_EGG) > 0
+        print(self.queue)
+        assert self.queue.push(str(ELEMENT_EGG)) > 0
+        print(self.queue)
         assert self.queue.pop() == ELEMENT_EGG
+        print(self.queue)
 
     def test_pop_empty_queue(self):
         assert self.queue.pop() is None
