@@ -212,4 +212,3 @@ class BucketQueue(object):
 
         except Exception as e:
             raise RequeuesError(e.message)
-

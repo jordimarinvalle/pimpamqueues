@@ -6,7 +6,6 @@ import redis
 from requeues import QUEUE_COLLECTION_OF_ELEMENTS
 from requeues import KEEP_QUEUED_ELEMENTS_KEEP, KEEP_QUEUED_ELEMENTS_REMOVE
 
-from requeues import Tools
 from requeues.exceptions import RequeuesError
 from requeues.exceptions import RequeuesElementWithoutValueError
 
@@ -49,10 +48,6 @@ class SmartQueue(SimpleQueue, BucketQueue):
 
         self.key_queue = self.get_key_queue()
         self.key_queue_bucket = self.get_key_bucket()
-
-        print "self.key_queue %s" % (self.key_queue)
-        print "self.key_queue_bucket %s" % (self.key_queue_bucket)
-
 
         self.keys = [self.key_queue, self.key_queue_bucket, ]
 
@@ -132,5 +127,3 @@ class SmartQueue(SimpleQueue, BucketQueue):
 
         except Exception as e:
             raise RequeuesError(e.message)
-
-
