@@ -63,7 +63,7 @@ class BucketQueue(object):
         Returns: string
         '''
         return 'queue:%s:type:%s:of:%s' % ('.'.join(self.id_args),
-                                           self.QUEUE_TYPE_NAME,
+                                           BucketQueue.QUEUE_TYPE_NAME,
                                            self.collection_of)
 
     def push(self, element):
@@ -208,11 +208,7 @@ class BucketQueue(object):
             for s in block_slices:
                 some_elements = elements[s[0]:s[1]]
                 pipe.sadd(self.key_queue_bucket, *some_elements)
-
-            num_pushed_elements = 0
-            for result in pipe.execute():
-                num_pushed_elements += result
-            return num_pushed_elements
+            return pipe.execute()
 
         except Exception as e:
             raise RequeuesError(e.message)

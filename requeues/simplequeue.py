@@ -65,7 +65,7 @@ class SimpleQueue(object):
         Returns: string
         '''
         return 'queue:%s:type:%s:of:%s' % ('.'.join(self.id_args),
-                                           self.QUEUE_TYPE_NAME,
+                                           SimpleQueue.QUEUE_TYPE_NAME,
                                            self.collection_of)
 
     def push(self, element, queue_first=False):

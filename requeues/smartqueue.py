@@ -11,9 +11,10 @@ from requeues.exceptions import RequeuesError
 from requeues.exceptions import RequeuesElementWithoutValueError
 
 from requeues.simplequeue import SimpleQueue
+from requeues.bucketqueue import BucketQueue
 
 
-class SmartQueue(SimpleQueue):
+class SmartQueue(SimpleQueue, BucketQueue):
     '''
     A lightweight queue. Smart Queue. It only adds a unique element once
     for the queue's time living. If a element wants to be added more than once,
@@ -47,9 +48,13 @@ class SmartQueue(SimpleQueue):
         self.redis = redis_conn
 
         self.key_queue = self.get_key_queue()
-        self.key_all = self.get_key_all()
+        self.key_queue_bucket = self.get_key_bucket()
 
-        self.keys = [self.key_queue, self.key_all, ]
+        print "self.key_queue %s" % (self.key_queue)
+        print "self.key_queue_bucket %s" % (self.key_queue_bucket)
+
+
+        self.keys = [self.key_queue, self.key_queue_bucket, ]
 
         if keep_previous is KEEP_QUEUED_ELEMENTS_REMOVE:
             self.delete()
@@ -61,17 +66,6 @@ class SmartQueue(SimpleQueue):
         Returns: string
         '''
         return '<SmartQueue: %s (%s)>' % (self.key_queue, self.num())
-
-    def get_key_all(self):
-        '''
-        Get a key id that will be used to store/retrieve data from
-        the redis server.
-
-        Returns: string
-        '''
-        return 'queue:%s:type:%s:of:%s:all' % ('.'.join(self.id_args),
-                                               self.QUEUE_TYPE_NAME,
-                                               self.collection_of)
 
     def push(self, element, queue_first=False):
         '''
@@ -91,11 +85,12 @@ class SmartQueue(SimpleQueue):
 
             element = str(element)
 
-            if not self._add_to_all(element):
+            if not self._push_to_bucket(element):
                 return 0
             return self._push_to_queue(element, queue_first)
 
-        except Exception:
+        except Exception as e:
+            print e.message
             raise RequeuesError("%s was not pushed" % (element))
 
     def push_some(self, elements, queue_first=False, num_block_size=None):
@@ -125,7 +120,7 @@ class SmartQueue(SimpleQueue):
 
             elements = list(elements)
 
-            add_statuses = self._add_some_to_all(elements)
+            add_statuses = self._push_some_to_bucket(elements, 1)
 
             elements_to_queue = []
             for i, status in enumerate(add_statuses):
@@ -138,43 +133,4 @@ class SmartQueue(SimpleQueue):
         except Exception as e:
             raise RequeuesError(e.message)
 
-    def _add_to_all(self, element):
-        '''
-        Add a element to the bucket that contains all pushed elements.
 
-        Arguments:
-        : element -- string
-
-        Returs: boolean
-        '''
-        if self.redis.sadd(self.key_all, element) is 1:
-            return True
-        return False
-
-    def _add_some_to_all(self, elements):
-        '''
-        Add some elements to the bucket that contains all pushed elements.
-
-        Arguments:
-        :elements -- a collection of strings
-
-        Raise:
-        :RequeuesError(), if something fails adding elements
-
-        Returns: list, with the status
-        '''
-        try:
-
-            block_slices = Tools.get_block_slices(
-                num_elements=len(elements),
-                num_block_size=1
-            )
-
-            pipe = self.redis.pipeline()
-            for s in block_slices:
-                some_elements = elements[s[0]:s[1]]
-                pipe.sadd(self.key_all, *some_elements)
-            return pipe.execute()
-
-        except Exception as e:
-            raise RequeuesError(e.message)
