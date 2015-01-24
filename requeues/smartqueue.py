@@ -8,6 +8,7 @@ from requeues import KEEP_QUEUED_ELEMENTS_KEEP, KEEP_QUEUED_ELEMENTS_REMOVE
 
 from requeues.exceptions import RequeuesError
 from requeues.exceptions import RequeuesElementWithoutValueError
+from requeues.exceptions import RequeuesDisambiguatorInvalidError
 
 from requeues.simplequeue import SimpleQueue
 from requeues.bucketqueue import BucketQueue
@@ -46,6 +47,11 @@ class SmartQueue(SimpleQueue, BucketQueue):
         self.id_args = id_args
         self.collection_of = collection_of
 
+        if disambiguator and not disambiguator.__dict__.get('disambiguate'):
+            raise RequeuesDisambiguatorInvalidError()
+
+        self.disambiguator = disambiguator
+
         if redis_conn is None:
             redis_conn = redis.Redis()
         self.redis = redis_conn
@@ -57,8 +63,6 @@ class SmartQueue(SimpleQueue, BucketQueue):
 
         if keep_previous is KEEP_QUEUED_ELEMENTS_REMOVE:
             self.delete()
-
-        self.disambiguator = disambiguator
 
     def __str__(self):
         '''

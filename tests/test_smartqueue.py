@@ -4,6 +4,7 @@
 import pytest
 
 from requeues import KEEP_QUEUED_ELEMENTS_REMOVE
+from requeues.exceptions import RequeuesDisambiguatorInvalidError
 
 from tests import redis_conn
 from requeues.smartqueue import SmartQueue
@@ -33,6 +34,13 @@ class Disambiguator(object):
     @staticmethod
     def disambiguate(element):
         return str(element).lower()
+
+
+class DisambiguatorInvalid(object):
+
+    @staticmethod
+    def invalid(element):
+        return element.lower()
 
 
 class TestSmartQueue(object):
@@ -108,6 +116,14 @@ class TestSmartQueue(object):
         num_elements = self.queue.push_some(some_elements)
         assert num_elements == (len(set(some_elements)) - 1)
         assert self.queue.push(ELEMENT_SPAM_UPPERCASED) == 0
+
+    def test_disambiguate_invalid(self):
+        with pytest.raises(RequeuesDisambiguatorInvalidError):
+            self.queue = SmartQueue(
+                id_args=['test', 'testing'],
+                redis_conn=redis_conn,
+                disambiguator=DisambiguatorInvalid,
+            )
 
     def test_delete(self):
         self.queue.push(element=ELEMENT_42)

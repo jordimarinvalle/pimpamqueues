@@ -16,3 +16,9 @@ class RequeuesError(Exception):
 class RequeuesElementWithoutValueError(RequeuesError):
 
     MESSAGE = 'Element do not have a value'
+
+
+class RequeuesDisambiguatorInvalidError(RequeuesError):
+
+    MESSAGE = 'Disambiguator must contain a disambiguate() static method ' \
+              'that returns a string'
