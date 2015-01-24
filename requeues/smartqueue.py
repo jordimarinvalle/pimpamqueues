@@ -40,9 +40,9 @@ class SmartQueue(SimpleQueue, BucketQueue):
                        connection will be created using the default
                        redis.client.Redis connection params.
         :disambiguator -- class (default: none), a class with a disambiguate
-                          static method which receives a string as an argument.
-                          It is used to discriminate those elements that
-                          do not need to be pushed again.
+                          static method which receives a string as an argument
+                          and return a string. It is used to discriminate
+                          those elements that do not need to be pushed again.
         '''
         self.id_args = id_args
         self.collection_of = collection_of
