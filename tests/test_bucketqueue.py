@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import pytest
-import random
 
 from requeues import KEEP_QUEUED_ELEMENTS_REMOVE
 
