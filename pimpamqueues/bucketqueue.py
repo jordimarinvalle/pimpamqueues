@@ -170,7 +170,7 @@ class BucketQueue(object):
         :element -- string
 
         Raise:
-        :RequeuesError(), if element can not be pushed
+        :PimPamQueuesError(), if element can not be pushed
 
         Returns: long, the number of queued elements
         '''
@@ -188,7 +188,7 @@ class BucketQueue(object):
         :num_block_size -- integer (default: none)
 
         Raise:
-        :RequeuesError(), if elements can not be pushed
+        :PimPamQueuesError(), if elements can not be pushed
 
         Returns: number, the number of queued elements
         '''
