@@ -18,6 +18,19 @@ class Tools(object):
 
     @staticmethod
     def get_block_slices(num_elements, num_block_size=None):
+        '''
+        Get how many loops and for each loop the position from and to for a
+        bunch of elements that are going to be pushed. It is useful for big
+        amount of element to be pepelined to the Redis server.
+
+        Arguments:
+        :num_elements -- integer, number of elements that are going to
+                         be pushed
+        :num_block_size -- integer (default: none), how big are going to be
+                           the Redis pipeline blocks
+
+        Returns: list of lists
+        '''
 
         block_slices = []
 
