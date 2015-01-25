@@ -22,7 +22,7 @@ class SmartQueue(SimpleQueue, BucketQueue):
 
     QUEUE_TYPE_NAME = 'smart'
 
-    def __init__(self, id_args=[], collection_of=QUEUE_COLLECTION_OF_ELEMENTS,
+    def __init__(self, id_args, collection_of=QUEUE_COLLECTION_OF_ELEMENTS,
                  keep_previous=True, redis_conn=None, disambiguator=None):
         '''
         Create a SmartQueue object.
