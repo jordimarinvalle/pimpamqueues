@@ -66,34 +66,34 @@ class SimpleQueue(object):
                                            SimpleQueue.QUEUE_TYPE_NAME,
                                            self.collection_of)
 
-    def push(self, element, queue_first=False):
+    def push(self, element, to_first=False):
         '''
         Push a element into the queue. Element can be pushed to the first or
         last position (by default is pushed to the last position).
 
         Arguments:
         :element -- string
-        :queue_first -- boolean (default: False)
+        :to_first -- boolean (default: False)
 
         Returns: long, the number of queued elements
         '''
         if element in ('', None):
             raise RequeuesElementWithoutValueError()
-        return self._push_to_queue(element, queue_first)
+        return self._push_to_queue(element, to_first)
 
-    def push_some(self, elements, queue_first=False, num_block_size=None):
+    def push_some(self, elements, to_first=False, num_block_size=None):
         '''
         Push a bunch of elements into the queue. Elements can be pushed to the
         first or last position (by default are pushed to the last position).
 
         Arguments:
         :elements -- a collection of strings
-        :queue_first -- boolean (default: false)
+        :to_first -- boolean (default: false)
         :num_block_size -- integer (default: none)
 
         Returns: long, the number of queued elements
         '''
-        return self._push_some_to_queue(elements, queue_first, num_block_size)
+        return self._push_some_to_queue(elements, to_first, num_block_size)
 
     def pop(self, last=False):
         '''
@@ -177,14 +177,14 @@ class SimpleQueue(object):
         '''
         return True if self.redis.delete(self.key_queue) else False
 
-    def _push_to_queue(self, element, queue_first=False):
+    def _push_to_queue(self, element, to_first=False):
         '''
         Push a element into the queue. Element can be pushed to the first or
         last position (by default is pushed to the last position).
 
         Arguments:
         :element -- string
-        :queue_first -- boolean (default: False)
+        :to_first -- boolean (default: False)
 
         Raise:
         :RequeuesError(), if element can not be pushed
@@ -193,14 +193,14 @@ class SimpleQueue(object):
         '''
         try:
 
-            if queue_first:
+            if to_first:
                 return self.redis.lpush(self.key_queue, element)
             return self.redis.rpush(self.key_queue, element)
 
         except Exception as e:
             raise RequeuesError(e.message)
 
-    def _push_some_to_queue(self, elements, queue_first=False,
+    def _push_some_to_queue(self, elements, to_first=False,
                             num_block_size=None):
         '''
         Push a bunch of elements into the queue. Elements can be pushed to the
@@ -208,7 +208,7 @@ class SimpleQueue(object):
 
         Arguments:
         :elements -- a collection of strings
-        :queue_first -- boolean (default: false)
+        :to_first -- boolean (default: false)
         :num_block_size -- integer (default: none)
 
         Raise:
@@ -220,7 +220,7 @@ class SimpleQueue(object):
 
             elements = list(elements)
 
-            if queue_first:
+            if to_first:
                 elements.reverse()
 
             block_slices = Tools.get_block_slices(
@@ -231,7 +231,7 @@ class SimpleQueue(object):
             pipe = self.redis.pipeline()
             for s in block_slices:
                 some_elements = elements[s[0]:s[1]]
-                if queue_first:
+                if to_first:
                     pipe.lpush(self.key_queue, *some_elements)
                 else:
                     pipe.rpush(self.key_queue, *some_elements)

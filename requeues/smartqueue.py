@@ -72,14 +72,14 @@ class SmartQueue(SimpleQueue, BucketQueue):
         '''
         return '<SmartQueue: %s (%s)>' % (self.key_queue, self.num())
 
-    def push(self, element, queue_first=False):
+    def push(self, element, to_first=False):
         '''
         Push a element into the queue. Element can be pushed to the first or
         last position (by default is pushed to the last position).
 
         Arguments:
         :element -- string
-        :queue_first -- boolean (default: False)
+        :to_first -- boolean (default: False)
 
         Returns: long number, the number of elements that are in the queue
         '''
@@ -92,12 +92,12 @@ class SmartQueue(SimpleQueue, BucketQueue):
 
             if not self._push_to_bucket(self.disambiguate(element)):
                 return 0
-            return self._push_to_queue(element, queue_first)
+            return self._push_to_queue(element, to_first)
 
         except Exception:
             raise RequeuesError("%s was not pushed" % (element))
 
-    def push_some(self, elements, queue_first=False, num_block_size=None):
+    def push_some(self, elements, to_first=False, num_block_size=None):
         '''
         Push a bunch of elements into the queue. Elements can be pushed to the
         first or last position (by default are pushed to the last position).
@@ -112,7 +112,7 @@ class SmartQueue(SimpleQueue, BucketQueue):
 
         Arguments:
         :elements -- a collection of strings
-        :queue_first -- boolean (default: false)
+        :to_first -- boolean (default: false)
         :num_block_size -- integer (default: none)
 
         Raise:
@@ -132,7 +132,7 @@ class SmartQueue(SimpleQueue, BucketQueue):
                 if status is 1:
                     elements_to_queue.append(elements[i])
 
-            return self._push_some_to_queue(elements_to_queue, queue_first,
+            return self._push_some_to_queue(elements_to_queue, to_first,
                                             num_block_size)
 
         except Exception as e:

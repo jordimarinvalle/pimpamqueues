@@ -63,7 +63,7 @@ class TestSmartQueue(object):
         self.queue.push(ELEMENT_EGG)
         self.queue.push(ELEMENT_BACON)
         self.queue.push(ELEMENT_SPAM)
-        self.queue.push(ELEMENT_42, queue_first=True)
+        self.queue.push(ELEMENT_42, to_first=True)
         assert self.queue.pop() == ELEMENT_42
 
     def test_push_some(self):
@@ -78,7 +78,7 @@ class TestSmartQueue(object):
     def test_push_some_to_first(self):
         self.queue.push(ELEMENT_42)
         self.queue.push_some(elements=[ELEMENT_EGG, ELEMENT_BACON],
-                             queue_first=True)
+                             to_first=True)
         assert self.queue.pop() == ELEMENT_EGG
 
     def test_pop(self):
