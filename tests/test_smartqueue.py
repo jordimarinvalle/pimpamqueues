@@ -3,11 +3,9 @@
 
 import pytest
 
-from requeues import KEEP_QUEUED_ELEMENTS_REMOVE
-from requeues.exceptions import RequeuesDisambiguatorInvalidError
-
 from tests import redis_conn
 from requeues.smartqueue import SmartQueue
+from requeues.exceptions import RequeuesDisambiguatorInvalidError
 
 
 ELEMENT_EGG = b'egg'
@@ -137,7 +135,7 @@ class TestSmartQueue(object):
 
         queue = SmartQueue(
             id_args=['test', 'testing'],
-            keep_previous=KEEP_QUEUED_ELEMENTS_REMOVE,
+            keep_previous=False,
             redis_conn=redis_conn
         )
         assert queue.is_empty() is True

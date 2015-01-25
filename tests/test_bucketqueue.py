@@ -3,8 +3,6 @@
 
 import pytest
 
-from requeues import KEEP_QUEUED_ELEMENTS_REMOVE
-
 from tests import redis_conn
 from requeues.bucketqueue import BucketQueue
 
@@ -84,7 +82,7 @@ class TestBucketQueue(object):
 
         queue_y = BucketQueue(
             id_args=['test', 'testing'],
-            keep_previous=KEEP_QUEUED_ELEMENTS_REMOVE,
+            keep_previous=False,
             redis_conn=redis_conn
         )
         assert queue_y.is_empty() is True

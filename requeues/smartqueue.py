@@ -4,7 +4,6 @@
 import redis
 
 from requeues import QUEUE_COLLECTION_OF_ELEMENTS
-from requeues import KEEP_QUEUED_ELEMENTS_KEEP, KEEP_QUEUED_ELEMENTS_REMOVE
 
 from requeues.exceptions import RequeuesError
 from requeues.exceptions import RequeuesElementWithoutValueError
@@ -23,10 +22,8 @@ class SmartQueue(SimpleQueue, BucketQueue):
 
     QUEUE_TYPE_NAME = 'smart'
 
-    def __init__(self, id_args=[],
-                 collection_of=QUEUE_COLLECTION_OF_ELEMENTS,
-                 keep_previous=KEEP_QUEUED_ELEMENTS_KEEP,
-                 redis_conn=None, disambiguator=None):
+    def __init__(self, id_args=[], collection_of=QUEUE_COLLECTION_OF_ELEMENTS,
+                 keep_previous=True, redis_conn=None, disambiguator=None):
         '''
         Create a SmartQueue object.
 
@@ -34,7 +31,7 @@ class SmartQueue(SimpleQueue, BucketQueue):
         :id_args -- list, list's values will be used to name the queue
         :collection_of -- string (default: QUEUE_COLLECTION_OF_ELEMENTS),
                           a type descriptor of queued elements
-        :keep_previous -- boolean (default: KEEP_QUEUED_ELEMENTS_KEEP),
+        :keep_previous -- boolean (default: true),
                           a flag to create a fresh queue or not
         :redis_conn -- redis.client.Redis (default: None), a redis
                        connection will be created using the default
@@ -61,7 +58,7 @@ class SmartQueue(SimpleQueue, BucketQueue):
 
         self.keys = [self.key_queue, self.key_queue_bucket, ]
 
-        if keep_previous is KEEP_QUEUED_ELEMENTS_REMOVE:
+        if keep_previous is False:
             self.delete()
 
     def __str__(self):
