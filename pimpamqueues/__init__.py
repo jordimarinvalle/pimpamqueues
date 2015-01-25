@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import math
-import hashlib
 
 
 NUM_BLOCK_SIZE = 1000
