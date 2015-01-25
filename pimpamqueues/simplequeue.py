@@ -72,6 +72,9 @@ class SimpleQueue(object):
         :element -- string
         :to_first -- boolean (default: False)
 
+        Raise:
+        :PimPamQueuesElementWithoutValueError, if element has not a value
+
         Returns: long, the number of queued elements
         '''
         if element in ('', None):
