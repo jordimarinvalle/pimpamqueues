@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 
-from requeues import Tools
+from pimpamqueues import Tools
 
 
 class TestTools(object):

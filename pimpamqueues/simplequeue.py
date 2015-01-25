@@ -3,11 +3,11 @@
 
 import redis
 
-from requeues import QUEUE_COLLECTION_OF_ELEMENTS
+from pimpamqueues import QUEUE_COLLECTION_OF_ELEMENTS
 
-from requeues import Tools
-from requeues.exceptions import RequeuesError
-from requeues.exceptions import RequeuesElementWithoutValueError
+from pimpamqueues import Tools
+from pimpamqueues.exceptions import PimPamQueuesError
+from pimpamqueues.exceptions import PimPamQueuesElementWithoutValueError
 
 
 class SimpleQueue(object):
@@ -75,7 +75,7 @@ class SimpleQueue(object):
         Returns: long, the number of queued elements
         '''
         if element in ('', None):
-            raise RequeuesElementWithoutValueError()
+            raise PimPamQueuesElementWithoutValueError()
         return self._push_to_queue(element, to_first)
 
     def push_some(self, elements, to_first=False, num_block_size=None):
@@ -184,7 +184,7 @@ class SimpleQueue(object):
         :to_first -- boolean (default: False)
 
         Raise:
-        :RequeuesError(), if element can not be pushed
+        :PimPamQueuesError(), if element can not be pushed
 
         Returns: long number, the number of elements that are in the queue
         '''
@@ -195,7 +195,7 @@ class SimpleQueue(object):
             return self.redis.rpush(self.key_queue, element)
 
         except Exception as e:
-            raise RequeuesError(e.message)
+            raise PimPamQueuesError(e.message)
 
     def _push_some_to_queue(self, elements, to_first=False,
                             num_block_size=None):
@@ -209,7 +209,7 @@ class SimpleQueue(object):
         :num_block_size -- integer (default: none)
 
         Raise:
-        :RequeuesError(), if elements can not be pushed
+        :PimPamQueuesError(), if elements can not be pushed
 
         Returns: long number, the number of elements that are in the queue
         '''
@@ -235,4 +235,4 @@ class SimpleQueue(object):
             return pipe.execute().pop()
 
         except Exception as e:
-            raise RequeuesError(e.message)
+            raise PimPamQueuesError(e.message)

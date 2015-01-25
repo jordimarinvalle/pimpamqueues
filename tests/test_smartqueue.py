@@ -4,8 +4,8 @@
 import pytest
 
 from tests import redis_conn
-from requeues.smartqueue import SmartQueue
-from requeues.exceptions import RequeuesDisambiguatorInvalidError
+from pimpamqueues.smartqueue import SmartQueue
+from pimpamqueues.exceptions import PimPamQueuesDisambiguatorInvalidError
 
 
 ELEMENT_EGG = b'egg'
@@ -116,7 +116,7 @@ class TestSmartQueue(object):
         assert self.queue.push(ELEMENT_SPAM_UPPERCASED) == 0
 
     def test_disambiguate_invalid(self):
-        with pytest.raises(RequeuesDisambiguatorInvalidError):
+        with pytest.raises(PimPamQueuesDisambiguatorInvalidError):
             self.queue = SmartQueue(
                 id_args=['test', 'testing'],
                 redis_conn=redis_conn,

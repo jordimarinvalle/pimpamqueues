@@ -3,14 +3,14 @@
 
 import redis
 
-from requeues import QUEUE_COLLECTION_OF_ELEMENTS
+from pimpamqueues import QUEUE_COLLECTION_OF_ELEMENTS
 
-from requeues.exceptions import RequeuesError
-from requeues.exceptions import RequeuesElementWithoutValueError
-from requeues.exceptions import RequeuesDisambiguatorInvalidError
+from pimpamqueues.exceptions import PimPamQueuesError
+from pimpamqueues.exceptions import PimPamQueuesElementWithoutValueError
+from pimpamqueues.exceptions import PimPamQueuesDisambiguatorInvalidError
 
-from requeues.simplequeue import SimpleQueue
-from requeues.bucketqueue import BucketQueue
+from pimpamqueues.simplequeue import SimpleQueue
+from pimpamqueues.bucketqueue import BucketQueue
 
 
 class SmartQueue(SimpleQueue, BucketQueue):
@@ -40,12 +40,16 @@ class SmartQueue(SimpleQueue, BucketQueue):
                           static method which receives a string as an argument
                           and return a string. It is used to discriminate
                           those elements that do not need to be pushed again.
+
+        Raise:
+        :PimPamQueuesDisambiguatorInvalidError(), if disambiguator argument
+                                                  is invalid
         '''
         self.id_args = id_args
         self.collection_of = collection_of
 
         if disambiguator and not disambiguator.__dict__.get('disambiguate'):
-            raise RequeuesDisambiguatorInvalidError()
+            raise PimPamQueuesDisambiguatorInvalidError()
 
         self.disambiguator = disambiguator
 
@@ -78,10 +82,14 @@ class SmartQueue(SimpleQueue, BucketQueue):
         :element -- string
         :to_first -- boolean (default: False)
 
+        Raise:
+        :PimPamQueuesError(), if element can not be pushed
+        :PimPamQueuesElementWithoutValueError, if element has not a value
+
         Returns: long number, the number of elements that are in the queue
         '''
         if element in ('', None):
-            raise RequeuesElementWithoutValueError()
+            raise PimPamQueuesElementWithoutValueError()
 
         try:
 
@@ -92,7 +100,7 @@ class SmartQueue(SimpleQueue, BucketQueue):
             return self._push_to_queue(element, to_first)
 
         except Exception:
-            raise RequeuesError("%s was not pushed" % (element))
+            raise PimPamQueuesError("%s was not pushed" % (element))
 
     def push_some(self, elements, to_first=False, num_block_size=None):
         '''
@@ -113,7 +121,7 @@ class SmartQueue(SimpleQueue, BucketQueue):
         :num_block_size -- integer (default: none)
 
         Raise:
-        :RequeuesError(), if element can not be pushed
+        :PimPamQueuesError(), if element can not be pushed
 
         Returns: long number, the number of elements that are in the queue
         '''
@@ -133,7 +141,7 @@ class SmartQueue(SimpleQueue, BucketQueue):
                                             num_block_size)
 
         except Exception as e:
-            raise RequeuesError(e.message)
+            raise PimPamQueuesError(e.message)
 
     def disambiguate(self, element):
         '''

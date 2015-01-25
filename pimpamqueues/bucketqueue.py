@@ -2,11 +2,11 @@
 
 import redis
 
-from requeues import QUEUE_COLLECTION_OF_ELEMENTS
+from pimpamqueues import QUEUE_COLLECTION_OF_ELEMENTS
 
-from requeues import Tools
-from requeues.exceptions import RequeuesError
-from requeues.exceptions import RequeuesElementWithoutValueError
+from pimpamqueues import Tools
+from pimpamqueues.exceptions import PimPamQueuesError
+from pimpamqueues.exceptions import PimPamQueuesElementWithoutValueError
 
 
 class BucketQueue(object):
@@ -73,7 +73,7 @@ class BucketQueue(object):
         Returns: long, the number of queued elements
         '''
         if element in ('', None):
-            raise RequeuesElementWithoutValueError()
+            raise PimPamQueuesElementWithoutValueError()
         return self._push_to_bucket(element)
 
     def push_some(self, elements, num_block_size=None):
@@ -177,7 +177,7 @@ class BucketQueue(object):
         try:
             return self.redis.sadd(self.key_queue_bucket, element)
         except Exception as e:
-            raise RequeuesError(e.message)
+            raise PimPamQueuesError(e.message)
 
     def _push_some_to_bucket(self, elements, num_block_size=None):
         '''
@@ -208,4 +208,4 @@ class BucketQueue(object):
             return pipe.execute()
 
         except Exception as e:
-            raise RequeuesError(e.message)
+            raise PimPamQueuesError(e.message)

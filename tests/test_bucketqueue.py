@@ -4,7 +4,7 @@
 import pytest
 
 from tests import redis_conn
-from requeues.bucketqueue import BucketQueue
+from pimpamqueues.bucketqueue import BucketQueue
 
 
 ELEMENT_EGG = b'egg'
