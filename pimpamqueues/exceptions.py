@@ -4,7 +4,7 @@
 
 class PimPamQueuesError(Exception):
 
-    MESSAGE = 'General error'
+    MESSAGE = 'Unexpected error'
 
     def __init__(self, message=''):
         self.message = message if message else self.MESSAGE
@@ -15,10 +15,10 @@ class PimPamQueuesError(Exception):
 
 class PimPamQueuesElementWithoutValueError(PimPamQueuesError):
 
-    MESSAGE = 'Element do not have a value'
+    MESSAGE = 'Element do not has a value'
 
 
 class PimPamQueuesDisambiguatorInvalidError(PimPamQueuesError):
 
     MESSAGE = 'Disambiguator must contain a disambiguate() static method ' \
-              'that returns a string'
+              'which returns a string'
