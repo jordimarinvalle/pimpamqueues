@@ -86,7 +86,8 @@ class SmartQueue(SimpleQueue, BucketQueue):
         :PimPamQueuesError(), if element can not be pushed
         :PimPamQueuesElementWithoutValueError, if element has not a value
 
-        Returns: long number, the number of elements that are in the queue
+        Returns: string, if element was queued returns the queued element,
+                 otherwise, empty string
         '''
         if element in ('', None):
             raise PimPamQueuesElementWithoutValueError()
@@ -96,8 +97,9 @@ class SmartQueue(SimpleQueue, BucketQueue):
             element = str(element)
 
             if not self._push_to_bucket(self.disambiguate(element)):
-                return 0
-            return self._push_to_queue(element, to_first)
+                return ''
+
+            return element if self._push_to_queue(element, to_first) else ''
 
         except Exception:
             raise PimPamQueuesError("%s was not pushed" % (element))
@@ -123,7 +125,7 @@ class SmartQueue(SimpleQueue, BucketQueue):
         Raise:
         :PimPamQueuesError(), if element can not be pushed
 
-        Returns: long number, the number of elements that are in the queue
+        Returns: list of strings, a list with queued elements
         '''
         try:
 
@@ -137,8 +139,10 @@ class SmartQueue(SimpleQueue, BucketQueue):
                 if status is 1:
                     elements_to_queue.append(elements[i])
 
-            return self._push_some_to_queue(elements_to_queue, to_first,
-                                            num_block_size)
+            self._push_some_to_queue(elements_to_queue, to_first,
+                                     num_block_size)
+
+            return elements_to_queue
 
         except Exception as e:
             raise PimPamQueuesError(e.message)

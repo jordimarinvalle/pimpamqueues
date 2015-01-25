@@ -55,7 +55,7 @@ class TestSmartQueue(object):
         assert self.queue.is_not_empty() is False
 
     def test_push(self):
-        assert self.queue.push(ELEMENT_EGG) == 1
+        assert self.queue.push(ELEMENT_EGG) == ELEMENT_EGG
 
     def test_push_to_first(self):
         self.queue.push(ELEMENT_EGG)
@@ -65,13 +65,14 @@ class TestSmartQueue(object):
         assert self.queue.pop() == ELEMENT_42
 
     def test_push_some(self):
-        assert self.queue.push_some(some_elements) == len(set(some_elements))
+        queued_elements = self.queue.push_some(some_elements)
+        assert (set(queued_elements) - set(some_elements)) == set()
 
     def test_push_smart(self):
         self.queue.push(ELEMENT_EGG)
         self.queue.push(ELEMENT_BACON)
         self.queue.push(ELEMENT_SPAM)
-        assert self.queue.push(ELEMENT_SPAM) == 0
+        assert self.queue.push(ELEMENT_SPAM) == ''
 
     def test_push_some_to_first(self):
         self.queue.push(ELEMENT_42)
@@ -101,8 +102,8 @@ class TestSmartQueue(object):
             redis_conn=redis_conn,
             disambiguator=Disambiguator,
         )
-        assert self.queue.push(ELEMENT_SPAM) == 1
-        assert self.queue.push(ELEMENT_SPAM_UPPERCASED) == 0
+        assert self.queue.push(ELEMENT_SPAM) == ELEMENT_SPAM
+        assert self.queue.push(ELEMENT_SPAM_UPPERCASED) == ''
 
     def test_disambiguate_some(self):
         self.queue = SmartQueue(
@@ -111,9 +112,9 @@ class TestSmartQueue(object):
             disambiguator=Disambiguator,
         )
 
-        num_elements = self.queue.push_some(some_elements)
-        assert num_elements == (len(set(some_elements)) - 1)
-        assert self.queue.push(ELEMENT_SPAM_UPPERCASED) == 0
+        queued_elements = self.queue.push_some(some_elements)
+        assert (set(queued_elements) - (set(some_elements)) == set())
+        assert self.queue.push(ELEMENT_SPAM_UPPERCASED) == ''
 
     def test_disambiguate_invalid(self):
         with pytest.raises(PimPamQueuesDisambiguatorInvalidError):
