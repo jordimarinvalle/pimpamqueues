@@ -14,15 +14,6 @@ QUEUE_COLLECTION_OF_ITEMS = 'items'
 QUEUE_COLLECTION_OF_ELEMENTS = 'elements'
 
 
-class DummyHasher(object):
-
-    @staticmethod
-    def hash(element):
-        if element:
-            return hashlib.md5(str(element).encode()).hexdigest()
-        return ''
-
-
 class Tools(object):
 
     @staticmethod
