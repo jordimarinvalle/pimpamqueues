@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 
 class PimPamQueuesError(Exception):
@@ -20,5 +20,5 @@ class PimPamQueuesElementWithoutValueError(PimPamQueuesError):
 
 class PimPamQueuesDisambiguatorInvalidError(PimPamQueuesError):
 
-    MESSAGE = 'Disambiguator must contain a disambiguate() static method ' \
+    MESSAGE = 'Disambiguator has to contain a disambiguate() static method ' \
               'which returns a string'
