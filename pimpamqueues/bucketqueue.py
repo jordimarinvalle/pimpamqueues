@@ -127,7 +127,8 @@ class BucketQueue(object):
 
     def is_element(self, element):
         '''
-        Checks if a element is in the queue. It returns True is element
+        Checks if a element is in the queue. It returns true is element is in
+        the queue, otherwise false.
 
         Arguments:
         :element -- string
@@ -190,7 +191,8 @@ class BucketQueue(object):
         Raise:
         :PimPamQueuesError(), if elements can not be pushed
 
-        Returns: number, the number of queued elements
+        Returns: list of numbers, each list element contains the result if
+                 pushed elements were queued or not
         '''
         try:
 
