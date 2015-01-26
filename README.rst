@@ -40,6 +40,7 @@ SimpleQueue
 ~~~~~~~~~~~
 
 .. code:: bash
+
     >>> from pimpamqueues.simplequeue import SimpleQueue
     >>> queue = SimpleQueue(id_args=['simplequeue'])
     >>> queue.num()
@@ -69,6 +70,7 @@ BucketQueue
 ~~~~~~~~~~~
 
 .. code:: bash
+
     >>> from pimpamqueues.bucketqueue import BucketQueue
     >>> queue = BucketQueue(id_args=['bucketqueue'])
     >>> queue.num()
@@ -98,6 +100,7 @@ SmartQueue
 ~~~~~~~~~~
 
 .. code:: bash
+
     >>> from pimpamqueues.smartqueue import SmartQueue
     >>> queue = SmartQueue(id_args=['smartqueue'])
     >>> queue.num()
