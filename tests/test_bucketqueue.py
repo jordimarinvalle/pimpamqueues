@@ -39,14 +39,12 @@ class TestBucketQueue(object):
         assert self.queue.is_not_empty() is False
 
     def test_push(self):
-        assert self.queue.push(ELEMENT_EGG) is 1
+        assert self.queue.push(ELEMENT_EGG) == ELEMENT_EGG
+        assert self.queue.push(ELEMENT_EGG) == ''
 
     def test_push_some(self):
-        push_statuses = self.queue.push_some(some_elements, 1)
-        num_pushed = 0
-        for status in push_statuses:
-            num_pushed += status
-        assert num_pushed <= len(some_elements)
+        queued_elements = self.queue.push_some(some_elements)
+        assert len(queued_elements) == len(set(some_elements))
 
     def test_pop(self):
         self.queue.push_some(some_elements)

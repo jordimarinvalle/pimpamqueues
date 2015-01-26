@@ -71,11 +71,11 @@ class BucketQueue(object):
         Arguments:
         :element -- string
 
-        Returns: long, the number of queued elements
+        Returns: string, element if element was queued otherwise a empty string
         '''
         if element in ('', None):
             raise PimPamQueuesElementWithoutValueError()
-        return self._push_to_bucket(element)
+        return element if self.push_some([element, ]) else ''
 
     def push_some(self, elements, num_block_size=None):
         '''
@@ -85,9 +85,24 @@ class BucketQueue(object):
         :elements -- a collection of strings
         :num_block_size -- integer (default: none)
 
-        Returns: long, the number of queued elements
+        Returns: list of strings, list of queued elements
         '''
-        return self._push_some_to_bucket(elements, num_block_size)
+        try:
+
+            elements = list(elements)
+
+            block_slices = Tools.get_block_slices(
+                num_elements=len(elements),
+                num_block_size=num_block_size
+            )
+
+            queued_elements = []
+            for s in block_slices:
+                queued_elements.extend(self.__push_some(elements[s[0]:s[1]]))
+            return queued_elements
+
+        except Exception as e:
+            raise PimPamQueuesError(e.message)
 
     def pop(self):
         '''
@@ -164,51 +179,28 @@ class BucketQueue(object):
         '''
         return True if self.redis.delete(self.key_queue_bucket) else False
 
-    def _push_to_bucket(self, element):
+    def __push_some(self, elements):
         '''
-        Push a element into the queue.
-
-        Arguments:
-        :element -- string
-
-        Raise:
-        :PimPamQueuesError(), if element can not be pushed
-
-        Returns: long, the number of queued elements
-        '''
-        try:
-            return self.redis.sadd(self.key_queue_bucket, element)
-        except Exception as e:
-            raise PimPamQueuesError(e.message)
-
-    def _push_some_to_bucket(self, elements, num_block_size=None):
-        '''
-        Push a bunch of elements into the queue.
+        Push some elements into the queue.
 
         Arguments:
         :elements -- a collection of strings
-        :num_block_size -- integer (default: none)
 
-        Raise:
-        :PimPamQueuesError(), if elements can not be pushed
-
-        Returns: list of numbers, each list element contains the result if
-                 pushed elements were queued or not
+        Returns: list of strings, a list with queued elements
         '''
-        try:
+        keys = [self.key_queue_bucket, ]
+        return self.redis.eval(self.__lua_push(), len(keys),
+                               *(keys + elements))
 
-            elements = list(elements)
+    def __lua_push(self):
+        return """
+            local elements = {}
 
-            block_slices = Tools.get_block_slices(
-                num_elements=len(elements),
-                num_block_size=num_block_size
-            )
+            for i=1, #ARGV do
+              if redis.call('SADD', KEYS[1], ARGV[i]) == 1 then
+                table.insert(elements, ARGV[i])
+              end
+            end
 
-            pipe = self.redis.pipeline()
-            for s in block_slices:
-                some_elements = elements[s[0]:s[1]]
-                pipe.sadd(self.key_queue_bucket, *some_elements)
-            return pipe.execute()
-
-        except Exception as e:
-            raise PimPamQueuesError(e.message)
+            return elements
+        """
