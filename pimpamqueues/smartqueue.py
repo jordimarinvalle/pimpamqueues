@@ -94,10 +94,7 @@ class SmartQueue(SimpleQueue, BucketQueue):
             raise PimPamQueuesElementWithoutValueError()
 
         try:
-
-            element = str(element)
             return element if self.push_some([element, ], to_first) else ''
-
         except Exception:
             raise PimPamQueuesError("%s was not pushed" % (element))
 

@@ -31,7 +31,7 @@ class Disambiguator(object):
 
     @staticmethod
     def disambiguate(element):
-        return str(element).lower()
+        return element.lower()
 
 
 class DisambiguatorInvalid(object):
