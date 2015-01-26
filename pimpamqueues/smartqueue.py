@@ -5,12 +5,13 @@ import redis
 
 from pimpamqueues import QUEUE_COLLECTION_OF_ELEMENTS
 
+from pimpamqueues import Tools
+from pimpamqueues.simplequeue import SimpleQueue
+from pimpamqueues.bucketqueue import BucketQueue
+
 from pimpamqueues.exceptions import PimPamQueuesError
 from pimpamqueues.exceptions import PimPamQueuesElementWithoutValueError
 from pimpamqueues.exceptions import PimPamQueuesDisambiguatorInvalidError
-
-from pimpamqueues.simplequeue import SimpleQueue
-from pimpamqueues.bucketqueue import BucketQueue
 
 
 class SmartQueue(SimpleQueue, BucketQueue):
@@ -95,11 +96,7 @@ class SmartQueue(SimpleQueue, BucketQueue):
         try:
 
             element = str(element)
-
-            if not self._push_to_bucket(self.disambiguate(element)):
-                return ''
-
-            return element if self._push_to_queue(element, to_first) else ''
+            return element if self.push_some([element, ], to_first) else ''
 
         except Exception:
             raise PimPamQueuesError("%s was not pushed" % (element))
@@ -108,14 +105,6 @@ class SmartQueue(SimpleQueue, BucketQueue):
         '''
         Push a bunch of elements into the queue. Elements can be pushed to the
         first or last position (by default are pushed to the last position).
-
-        Note
-        ====
-        As Redis SADD function's response returns the number of added elements
-        and not the added elements, there is a call to Redis server for each
-        element to check if it was previously added or not. It is required to
-        know it for pushing only to the queue those elements that have not been
-        pushed to the queue in the queue time living.
 
         Arguments:
         :elements -- a collection of strings
@@ -129,20 +118,21 @@ class SmartQueue(SimpleQueue, BucketQueue):
         '''
         try:
 
-            elements = list(elements)
+            elements = self.disambiguate_some(list(elements))
 
-            disambiguated_elements = self.disambiguate_some(elements)
-            add_statuses = self._push_some_to_bucket(disambiguated_elements, 1)
+            if to_first:
+                elements.reverse()
 
-            elements_to_queue = []
-            for i, status in enumerate(add_statuses):
-                if status is 1:
-                    elements_to_queue.append(elements[i])
+            block_slices = Tools.get_block_slices(
+                num_elements=len(elements),
+                num_block_size=num_block_size
+            )
 
-            self._push_some_to_queue(elements_to_queue, to_first,
-                                     num_block_size)
-
-            return elements_to_queue
+            queued_elements = []
+            for s in block_slices:
+                some_elements = self.__push_some(elements[s[0]:s[1]], to_first)
+                queued_elements.extend(some_elements)
+            return queued_elements
 
         except Exception as e:
             raise PimPamQueuesError(e.message)
@@ -191,3 +181,37 @@ class SmartQueue(SimpleQueue, BucketQueue):
         Returns: boolean, true if queue needs to disambiguate, otherwise false
         '''
         return True if self.disambiguator else False
+
+    def __push_some(self, elements, to_first=False):
+        '''
+        Push some elements into the queue. Elements can be pushed to the
+        first or last position (by default are pushed to the last position).
+
+        Arguments:
+        :elements -- a collection of strings
+        :to_first -- boolean (default: false)
+
+        Returns: list of strings, a list with queued elements
+        '''
+        push_to = 'lpush' if to_first is True else 'rpush'
+
+        keys = [self.key_queue_bucket, self.key_queue, push_to]
+        return self.redis.eval(self.__lua_push(), len(keys),
+                               *(keys + elements))
+
+    def __lua_push(self):
+        return """
+            local elements = {}
+
+            for i=1, #ARGV do
+              if redis.call('SADD', KEYS[1], ARGV[i]) == 1 then
+                table.insert(elements, ARGV[i])
+              end
+            end
+
+            for i=1, #elements do
+              redis.call(KEYS[3], KEYS[2], elements[i])
+            end
+
+            return elements
+        """
