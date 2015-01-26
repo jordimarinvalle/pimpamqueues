@@ -1,15 +1,12 @@
 PimPamQueues
 ============
 
-
-PimPam What?
-------------
-PimPamQueues, lightweight queue interfaces with Redis super powers.
+**Lightweight queue interfaces with Redis super powers**
 
 
 Description
 -----------
-PimPamQueues provides lightweight Python interfaces to interact with queues on a distrubuted system.
+PimPamQueues provides easy and lightweight Python interfaces to interact with queues on a distributed system.
 
 
 Requirements
