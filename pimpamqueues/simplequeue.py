@@ -79,7 +79,7 @@ class SimpleQueue(object):
         '''
         if element in ('', None):
             raise PimPamQueuesElementWithoutValueError()
-        return self._push_to_queue(element, to_first)
+        return self.push_some([element, ], to_first)
 
     def push_some(self, elements, to_first=False, num_block_size=None):
         '''
@@ -93,7 +93,29 @@ class SimpleQueue(object):
 
         Returns: long, the number of queued elements
         '''
-        return self._push_some_to_queue(elements, to_first, num_block_size)
+        try:
+
+            elements = list(elements)
+
+            if to_first:
+                elements.reverse()
+
+            block_slices = Tools.get_block_slices(
+                num_elements=len(elements),
+                num_block_size=num_block_size
+            )
+
+            pipe = self.redis.pipeline()
+            for s in block_slices:
+                some_elements = elements[s[0]:s[1]]
+                if to_first:
+                    pipe.lpush(self.key_queue, *some_elements)
+                else:
+                    pipe.rpush(self.key_queue, *some_elements)
+            return pipe.execute().pop()
+
+        except Exception as e:
+            raise PimPamQueuesError(e.message)
 
     def pop(self, last=False):
         '''
@@ -176,66 +198,3 @@ class SimpleQueue(object):
         Returns: boolean, true if queue has been deleted, otherwise false
         '''
         return True if self.redis.delete(self.key_queue) else False
-
-    def _push_to_queue(self, element, to_first=False):
-        '''
-        Push a element into the queue. Element can be pushed to the first or
-        last position (by default is pushed to the last position).
-
-        Arguments:
-        :element -- string
-        :to_first -- boolean (default: False)
-
-        Raise:
-        :PimPamQueuesError(), if element can not be pushed
-
-        Returns: long number, the number of elements that are in the queue
-        '''
-        try:
-
-            if to_first:
-                return self.redis.lpush(self.key_queue, element)
-            return self.redis.rpush(self.key_queue, element)
-
-        except Exception as e:
-            raise PimPamQueuesError(e.message)
-
-    def _push_some_to_queue(self, elements, to_first=False,
-                            num_block_size=None):
-        '''
-        Push a bunch of elements into the queue. Elements can be pushed to the
-        first or last position (by default are pushed to the last position).
-
-        Arguments:
-        :elements -- a collection of strings
-        :to_first -- boolean (default: false)
-        :num_block_size -- integer (default: none)
-
-        Raise:
-        :PimPamQueuesError(), if elements can not be pushed
-
-        Returns: long number, the number of elements that are in the queue
-        '''
-        try:
-
-            elements = list(elements)
-
-            if to_first:
-                elements.reverse()
-
-            block_slices = Tools.get_block_slices(
-                num_elements=len(elements),
-                num_block_size=num_block_size
-            )
-
-            pipe = self.redis.pipeline()
-            for s in block_slices:
-                some_elements = elements[s[0]:s[1]]
-                if to_first:
-                    pipe.lpush(self.key_queue, *some_elements)
-                else:
-                    pipe.rpush(self.key_queue, *some_elements)
-            return pipe.execute().pop()
-
-        except Exception as e:
-            raise PimPamQueuesError(e.message)
