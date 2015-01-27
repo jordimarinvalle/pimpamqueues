@@ -12,6 +12,13 @@ QUEUE_COLLECTION_OF_TASKS = 'tasks'
 QUEUE_COLLECTION_OF_ITEMS = 'items'
 QUEUE_COLLECTION_OF_ELEMENTS = 'elements'
 
+VERSION_MAJOR = 1
+VERSION_MINOR = 0
+VERSION_MICRO = 0
+
+__version__ = "%s" % (".".join(str(v) for v in [VERSION_MAJOR, VERSION_MINOR,
+                      VERSION_MICRO]))
+
 
 class Tools(object):
 
