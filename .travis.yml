@@ -1,0 +1,13 @@
+# Travis CI (https://travis-ci.org/) is a free hosted continuous integration
+# platform for the open source community.
+
+
+language: python
+env:
+    - TOX_ENV=py27
+    - TOX_ENV=py34
+    - TOX_ENV=pep8
+install:
+    - "pip install -r requirements.txt"
+script:
+    - tox -e $TOX_ENV
