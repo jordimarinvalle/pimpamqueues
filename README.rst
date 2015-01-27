@@ -3,6 +3,8 @@ PimPamQueues
 
 **Lightweight queue interfaces with Redis super powers**
 
+.. image:: https://api.travis-ci.org/jordimarinvalle/pimpamqueues.png
+        :target: https://secure.travis-ci.org/jordimarinvalle/pimpamqueues
 
 Description
 -----------
