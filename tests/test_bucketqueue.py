@@ -48,7 +48,7 @@ class TestBucketQueue(object):
 
     def test_pop(self):
         self.queue.push_some(some_elements)
-        assert self.queue.pop() != None
+        assert self.queue.pop() is not None
 
     def test_pop_empty_queue(self):
         assert self.queue.pop() is None
