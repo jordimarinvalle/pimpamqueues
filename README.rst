@@ -4,7 +4,16 @@ PimPamQueues
 **Lightweight queue interfaces with Redis super powers**
 
 .. image:: https://api.travis-ci.org/jordimarinvalle/pimpamqueues.png
-        :target: https://secure.travis-ci.org/jordimarinvalle/pimpamqueues
+    :target: https://secure.travis-ci.org/jordimarinvalle/pimpamqueues
+
+.. image:: https://pypip.in/version/pimpamqueues/badge.svg?text=version
+    :target: https://pypi.python.org/pypi/pimpamqueues/
+    :alt: Latest Version
+
+.. image:: https://pypip.in/py_versions/pimpamqueues/badge.svg
+    :target: https://pypi.python.org/pypi/pimpamqueues/
+    :alt: Supported Python versions
+
 
 Description
 -----------
