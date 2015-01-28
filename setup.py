@@ -48,6 +48,9 @@ setup(
     packages=[
         'pimpamqueues',
     ],
+    install_requires=[
+        'redis',
+    ],
     extras_require={
         'redis': ['redis', ],
         'testing': ['pytest', ],
