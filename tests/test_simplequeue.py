@@ -69,6 +69,11 @@ class TestSimpleQueue(object):
         self.queue.push_some(some_elements)
         assert self.queue.first_elements(3) == some_elements[0:3]
 
+    def test_remove(self):
+        self.queue.push_some([ELEMENT_EGG, ELEMENT_BACON, ELEMENT_SPAM])
+        assert self.queue.remove(ELEMENT_SPAM) is True
+        assert self.queue.remove(ELEMENT_SPAM) is False
+
     def test_delete(self):
         self.queue.push(element=ELEMENT_42)
         assert self.queue.num() == 1
