@@ -41,6 +41,20 @@ Queue Interfaces
 - SmartQueue, queue which stores queued elements aside the queue for not queueing the same incoming elements again.
 
 
+Instalation
+-----------
+
+PIP
+~~~
+
+For a pip installation, just ``pip install pimpamqueues``
+
+.. code:: bash
+
+    pip install pimpamqueues
+
+
+
 Usage
 -----
 
