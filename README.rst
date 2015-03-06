@@ -51,7 +51,7 @@ For a pip installation, just ``pip install pimpamqueues``
 
 .. code:: bash
 
-    pip install pimpamqueues
+    $ pip install pimpamqueues
 
 
 
