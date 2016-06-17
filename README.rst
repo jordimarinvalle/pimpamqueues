@@ -5,7 +5,7 @@ PimPamQueues
 
 .. image:: https://api.travis-ci.org/jordimarinvalle/pimpamqueues.svg
     :target: https://travis-ci.org/jordimarinvalle/pimpamqueues
-    :target: Build status
+    :alt: Build status
 
 .. image:: https://img.shields.io/pypi/v/pimpamqueues.svg
     :target: https://pypi.python.org/pypi/pimpamqueues/
