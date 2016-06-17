@@ -48,6 +48,9 @@ setup(
     packages=[
         'pimpamqueues',
     ],
+    install_requires=[
+        'redis',
+    ],
     extras_require={
         'redis': ['redis', ],
         'testing': ['pytest', ],
@@ -67,6 +70,7 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Topic :: System :: Distributed Computing',
         'Topic :: Utilities',
     ],
