@@ -74,7 +74,7 @@ class SmartQueue(SimpleQueue, BucketQueue):
         '''
         return '<SmartQueue: %s (%s)>' % (self.key_queue, self.num())
 
-    def push(self, element, to_first=False):
+    def push(self, element, to_first=False, force=False):
         '''
         Push a element into the queue. Element can be pushed to the first or
         last position (by default is pushed to the last position).
@@ -82,6 +82,7 @@ class SmartQueue(SimpleQueue, BucketQueue):
         Arguments:
         :element -- string
         :to_first -- boolean (default: False)
+        :force -- boolean (default: False)
 
         Raise:
         :PimPamQueuesError(), if element can not be pushed
@@ -94,11 +95,14 @@ class SmartQueue(SimpleQueue, BucketQueue):
             raise PimPamQueuesElementWithoutValueError()
 
         try:
-            return element if self.push_some([element, ], to_first) else ''
+            if self.push_some([element, ], to_first, force):
+                return element
+            return ''
         except Exception:
             raise PimPamQueuesError("%s was not pushed" % (element))
 
-    def push_some(self, elements, to_first=False, num_block_size=None):
+    def push_some(self, elements, to_first=False, force=False,
+                  num_block_size=None):
         '''
         Push a bunch of elements into the queue. Elements can be pushed to the
         first or last position (by default are pushed to the last position).
@@ -106,6 +110,7 @@ class SmartQueue(SimpleQueue, BucketQueue):
         Arguments:
         :elements -- a collection of strings
         :to_first -- boolean (default: false)
+        :force -- boolean (default: False)
         :num_block_size -- integer (default: none)
 
         Raise:
@@ -127,7 +132,11 @@ class SmartQueue(SimpleQueue, BucketQueue):
 
             queued_elements = []
             for s in block_slices:
-                some_elements = self.__push_some(elements[s[0]:s[1]], to_first)
+                some_elements = self.__push_some(
+                    elements=elements[s[0]:s[1]],
+                    to_first=to_first,
+                    force=force
+                )
                 queued_elements.extend(some_elements)
             return queued_elements
 
@@ -179,7 +188,7 @@ class SmartQueue(SimpleQueue, BucketQueue):
         '''
         return True if self.disambiguator else False
 
-    def __push_some(self, elements, to_first=False):
+    def __push_some(self, elements, to_first=False, force=False):
         '''
         Push some elements into the queue. Elements can be pushed to the
         first or last position (by default are pushed to the last position).
@@ -187,16 +196,33 @@ class SmartQueue(SimpleQueue, BucketQueue):
         Arguments:
         :elements -- a collection of strings
         :to_first -- boolean (default: false)
+        :force -- boolean (default: False)
 
         Returns: list of strings, a list with queued elements
         '''
         push_to = 'lpush' if to_first is True else 'rpush'
 
         keys = [self.key_queue_bucket, self.key_queue, push_to]
-        return self.redis.eval(self.__lua_push(), len(keys),
+        return self.redis.eval(self.__lua_push(force), len(keys),
                                *(keys + elements))
 
-    def __lua_push(self):
+    def __lua_push(self, force=False):
+        if force:
+            return """
+                local elements = {}
+
+                for i=1, #ARGV do
+                  redis.call('SADD', KEYS[1], ARGV[i])
+                  table.insert(elements, ARGV[i])
+                end
+
+                for i=1, #elements do
+                  redis.call(KEYS[3], KEYS[2], elements[i])
+                end
+
+                return elements
+            """
+
         return """
             local elements = {}
 
