@@ -74,10 +74,43 @@ class TestSmartQueue(object):
         self.queue.push(ELEMENT_SPAM)
         assert self.queue.push(ELEMENT_SPAM) == ''
 
+    def test_push_smart_force(self):
+        self.queue.push(ELEMENT_EGG)
+        self.queue.push(ELEMENT_BACON)
+        self.queue.push(ELEMENT_SPAM)
+        assert self.queue.push(element=ELEMENT_SPAM, force=True) != ''
+
+    def test_push_smart_some_force(self):
+        queued_elements = self.queue.push_some(
+            elements=some_elements,
+            force=True
+        )
+        assert len(some_elements) == len(queued_elements)
+
+    def test_push_smart_force_push_smart_some_force(self):
+        self.queue.push(ELEMENT_EGG)
+        self.queue.push(ELEMENT_BACON)
+        self.queue.push(ELEMENT_SPAM)
+        self.queue.push(ELEMENT_SPAM)
+
+        num_elements = self.queue.num()
+
+        self.queue.push(element=ELEMENT_SPAM, force=True)
+
+        queued_elements = self.queue.push_some(
+            elements=some_elements,
+            force=True
+        )
+        self.queue.push(element=ELEMENT_SPAM)
+
+        assert self.queue.num() == (num_elements + 1 + len(queued_elements))
+
     def test_push_some_to_first(self):
         self.queue.push(ELEMENT_42)
-        self.queue.push_some(elements=[ELEMENT_EGG, ELEMENT_BACON],
-                             to_first=True)
+        self.queue.push_some(
+            elements=[ELEMENT_EGG, ELEMENT_BACON],
+            to_first=True
+        )
         assert self.queue.pop() == ELEMENT_EGG
 
     def test_pop(self):
@@ -143,6 +176,7 @@ class TestSmartQueue(object):
 
     def teardown(self):
         self.queue.delete()
+
 
 if __name__ == '__main__':
     pytest.main()

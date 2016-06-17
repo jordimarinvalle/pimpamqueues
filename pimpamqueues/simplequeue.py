@@ -191,6 +191,17 @@ class SimpleQueue(object):
         queue_to = num_elements - 1
         return self.elements(queue_to=queue_to)
 
+    def remove(self, element):
+        '''
+        Remove a element from the queue.
+
+        Arguments:
+        :element -- string
+
+        Returns: boolean, return true if element was removed, otherwise false
+        '''
+        return True if self.redis.lrem(self.key_queue, element) else False
+
     def delete(self):
         '''
         Delete the queue with all its elements.

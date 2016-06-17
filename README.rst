@@ -3,14 +3,15 @@ PimPamQueues
 
 **Lightweight queue interfaces with Redis super powers**
 
-.. image:: https://api.travis-ci.org/jordimarinvalle/pimpamqueues.png
-    :target: https://secure.travis-ci.org/jordimarinvalle/pimpamqueues
+.. image:: https://api.travis-ci.org/jordimarinvalle/pimpamqueues.svg
+    :target: https://travis-ci.org/jordimarinvalle/pimpamqueues
+    :alt: Build status
 
-.. image:: https://pypip.in/version/pimpamqueues/badge.svg?text=version
+.. image:: https://img.shields.io/pypi/v/pimpamqueues.svg
     :target: https://pypi.python.org/pypi/pimpamqueues/
     :alt: Latest Version
 
-.. image:: https://pypip.in/py_versions/pimpamqueues/badge.svg
+.. image:: https://img.shields.io/pypi/pyversions/pimpamqueues.svg
     :target: https://pypi.python.org/pypi/pimpamqueues/
     :alt: Supported Python versions
 
@@ -22,27 +23,27 @@ PimPamQueues provides easy and lightweight Python interfaces to interact with qu
 
 Requirements
 ------------
-- Python 2.7 or 3.4, `python.org <https://www.python.org/>`_
-- A runing Redis server, `redis.io <http://redis.io/>`_
+- Python 2.7, 3.4 or 3.5 `python.org <https://www.python.org/>`_
+- A running Redis server, `redis.io <http://redis.io/>`_
 - Redis Python library, `redis-py.readthedocs.org <https://redis-py.readthedocs.org/en/latest/>`_
 
 
 Features
 --------
-- Supports at least Python 2.7 and 3.4.
+- Supports Python 2.7, 3.4 and 3.5.
 - Provides super-simple queue interfaces for creating different types of queues.
-- Designed to be used on distributed systems - also works on non-distributed systems ;).
+- Designed to be used on distributed systems - also works on non-distributed systems 😎.
 
 
 Queue Interfaces
 ----------------
 - SimpleQueue, just a regular queue.
-- BucketQueue, unordered queue of unique elements with a extreamly fast element existance search method.
+- BucketQueue, unordered queue of unique elements with a extremely fast element existence search method.
 - SmartQueue, queue which stores queued elements aside the queue for not queueing the same incoming elements again.
 
 
-Instalation
------------
+Installation
+------------
 
 PIP
 ~~~
@@ -145,4 +146,10 @@ SmartQueue
     b'bacon'
     >>> queue.elements()
     [b'spam']
+    >>> queue.push('spam', force=True)
+    'spam'
+    >>> queue.push_some(['spam', 'spam'], force=True)
+    [b'spam', b'spam']
+    >>> queue.elements()
+    [b'spam', b'spam', b'spam', b'spam']
     ...

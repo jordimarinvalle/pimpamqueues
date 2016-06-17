@@ -5,8 +5,8 @@ import redis
 
 # REDISLABS FREE ACCOUNT
 # https://redislabs.com/
-REDIS_HOST = 'pub-redis-12294.us-east-1-1.1.ec2.garantiadata.com'
-REDIS_PORT = '12294'
+REDIS_HOST = 'pub-redis-10356.us-east-1-3.6.ec2.redislabs.com'
+REDIS_PORT = '10356'
 REDIS_PASSWORD = 'eggbaconspam42'
 REDIS_DATABASE = '0'
 
